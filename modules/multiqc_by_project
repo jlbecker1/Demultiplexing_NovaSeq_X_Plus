@@ -1,0 +1,22 @@
+process MULTIQC_BY_PROJECT {
+
+    tag "${project}"
+
+    publishDir "${params.outdir}/${project}/multiqc", mode: 'copy'
+
+    input:
+    tuple val(project), path(fastqc_zips)
+
+    output:
+    path "multiqc_${project}.html"
+
+    script:
+    """
+    mkdir -p qc_inputs
+    cp -v ${fastqc_zips} qc_inputs/
+
+    multiqc qc_inputs \
+      --filename multiqc_${project}.html \
+      --title "MultiQC – ${project}"
+    """
+}
